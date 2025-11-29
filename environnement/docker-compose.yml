@@ -15,7 +15,8 @@ services:
   app:
     build:
       context: ../api
-    container_name: docker_td
+      dockerfile: Dockerfile.dev
+    container_name: docker_td_api
     ports:
       - "3000:3000"
     environment:
@@ -29,9 +30,26 @@ services:
       - db
     volumes:
       - ../api:/app
-      - ../api/node_modules:/app/node_modules
+      - /app/node_modules
     networks:
       - docker_td_network
+
+  front:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile.dev
+    container_name: docker_td_front
+    ports:
+      - "5173:5173"
+    environment:
+      VITE_API_URL: http://localhost:3000/api
+    volumes:
+      - ../frontend:/app
+      - /app/node_modules
+    networks:
+      - docker_td_network
+    depends_on:
+      - app
 
 networks:
   docker_td_network:
