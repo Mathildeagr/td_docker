@@ -41,7 +41,6 @@ const start = async () => {
       }
     });
 
-    // Routes Health & Status
     fastify.register(async (app) => {
       app.get('/health', {
         schema: {
