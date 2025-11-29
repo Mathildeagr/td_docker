@@ -69,7 +69,6 @@ const start = async () => {
       });
     }, { prefix: '/api' });
 
-    // Routes CRUD Items
     fastify.register(async (app) => {
       const itemRepository = AppDataSource.getRepository(Item);
 
