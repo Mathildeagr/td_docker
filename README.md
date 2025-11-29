@@ -39,7 +39,7 @@ Ce projet est une application web complète conteneurisée comprenant :
 
 ```mermaid
 graph TB
-    subgraph "GitHub Actions CI/CD"
+    subgraph CICD["GitHub Actions CI/CD"]
         A[Push sur main] --> B{Changements détectés?}
         B -->|api/**| C[Build API Image]
         B -->|frontend/**| D[Build Frontend Image]
@@ -48,13 +48,13 @@ graph TB
         E --> F[Déploiement automatique]
     end
     
-    subgraph "Docker Compose Stack"
-        G[Nginx / Frontend] -->|Requêtes HTTP| H[API Fastify]
+    subgraph Stack["Docker Compose Stack"]
+        G[Nginx Frontend] -->|Requêtes HTTP| H[API Fastify]
         H -->|ORM TypeORM| I[(PostgreSQL)]
-        H -->|Swagger Docs| J[/docs endpoint]
+        H -->|Swagger Docs| J[docs endpoint]
     end
     
-    subgraph "Volumes Docker"
+    subgraph Volumes["Volumes Docker"]
         I -.->|Persistance| K[Volume postgres-data]
     end
     
@@ -362,24 +362,24 @@ volumes:
 ```mermaid
 graph LR
     A[Push sur main] --> B{Filtrage des chemins}
-    B -->|api/**| C[Job build-api]
-    B -->|frontend/**| D[Job build-frontend]
+    B -->|api| C[Job build-api]
+    B -->|frontend| D[Job build-frontend]
     
     C --> E[Checkout code]
-    E --> F[Détection changements Git]
+    E --> F[Détection changements]
     F --> G{API modifiée?}
     G -->|Oui| H[Login Docker Hub]
-    H --> I[Build image multi-stage]
-    I --> J[Push vers Docker Hub]
-    J --> K[Tag: latest + SHA]
+    H --> I[Build multi-stage]
+    I --> J[Push Docker Hub]
+    J --> K[Tag latest SHA]
     
     D --> L[Checkout code]
-    L --> M[Détection changements Git]
+    L --> M[Détection changements]
     M --> N{Frontend modifié?}
     N -->|Oui| O[Login Docker Hub]
-    O --> P[Build image multi-stage]
-    P --> Q[Push vers Docker Hub]
-    Q --> R[Tag: latest + SHA]
+    O --> P[Build multi-stage]
+    P --> Q[Push Docker Hub]
+    Q --> R[Tag latest SHA]
     
     style C fill:#ffe1e1
     style D fill:#ffe1e1
@@ -676,3 +676,34 @@ docker-compose logs --tail=100 api
 **Problème** : `synchronize: true` peut causer des pertes de données en production.
 
 **Solution** : Utiliser des migrations TypeORM pour la production.
+
+---
+
+## 👥 Contribution
+
+Pour contribuer au projet :
+
+1. Fork le repository
+2. Créer une branche (`git checkout -b feature/amelioration`)
+3. Commit les changements (`git commit -m 'Ajout fonctionnalité'`)
+4. Push vers la branche (`git push origin feature/amelioration`)
+5. Ouvrir une Pull Request
+
+---
+
+## 📄 Licence
+
+Ce projet est sous licence MIT.
+
+---
+
+## 📞 Support
+
+Pour toute question ou problème :
+- Ouvrir une issue sur GitHub
+- Consulter la documentation Swagger : `/docs`
+- Vérifier les logs : `docker-compose logs -f`
+
+---
+
+**Développé avec ❤️ dans le cadre du TD Conception d'application conteneurisée**
