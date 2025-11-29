@@ -7,19 +7,22 @@ on:
     paths:
       - "api/**"
       - "frontend/**"
-      - ".github/workflows/docker.yml"
+      - ".github/workflows/docker-publish.yml"
 
 jobs:
 
   build-api:
-    if: contains(github.event.head_commit.message, '[skip-api]') != true
     runs-on: ubuntu-latest
     name: Build & Push API
+
     if: |
-      contains(join(github.event.commits.*.modified), 'api/') ||
-      contains(join(github.event.commits.*.added), 'api/') ||
-      contains(join(github.event.commits.*.removed), 'api/')
-    
+      !contains(github.event.head_commit.message, '[skip-api]') &&
+      (
+        contains(join(github.event.commits.*.modified), 'api/') ||
+        contains(join(github.event.commits.*.added), 'api/') ||
+        contains(join(github.event.commits.*.removed), 'api/')
+      )
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -43,12 +46,16 @@ jobs:
   build-frontend:
     runs-on: ubuntu-latest
     name: Build & Push FRONTEND
+
     needs: build-api
 
     if: |
-      contains(join(github.event.commits.*.modified), 'frontend/') ||
-      contains(join(github.event.commits.*.added), 'frontend/') ||
-      contains(join(github.event.commits.*.removed), 'frontend/')
+      !contains(github.event.head_commit.message, '[skip-frontend]') &&
+      (
+        contains(join(github.event.commits.*.modified), 'frontend/') ||
+        contains(join(github.event.commits.*.added), 'frontend/') ||
+        contains(join(github.event.commits.*.removed), 'frontend/')
+      )
 
     steps:
       - name: Checkout
