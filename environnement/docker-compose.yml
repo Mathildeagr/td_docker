@@ -1,0 +1,43 @@
+services:
+  db:
+    image: postgres:18.0-alpine3.22
+    container_name: docker_td_db
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+      PGPORT: 5438
+    ports:
+      - "5438:5438"
+    networks:
+      - docker_td_network
+
+  app:
+    build:
+      context: ../api
+    container_name: docker_td
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: ${NODE_ENV}
+      DB_HOST: db
+      DB_PORT: 5438
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+    depends_on:
+      - db
+    volumes:
+      - ../api:/app
+      - ../api/node_modules:/app/node_modules
+    networks:
+      - docker_td_network
+
+networks:
+  docker_td_network:
+    driver: bridge
+    name: docker_td_network
+    external: true
+
+volumes:
+  node_modules:
