@@ -1,7 +1,7 @@
 import "reflect-metadata"
 import { DataSource } from "typeorm"
 import 'dotenv/config';
-import { Item } from "./Item";
+import { Item } from "../entities/Item";
 
 export const AppDataSource = new DataSource({
   type: "postgres",

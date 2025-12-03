@@ -265,7 +265,7 @@ export const AppDataSource = new DataSource({
   username: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
-  synchronize: true,  // ⚠️ Désactiver en production
+  synchronize: true,
   logging: false,
   entities: [Item]
 })
@@ -611,26 +611,10 @@ Tous les services exposent des endpoints de santé :
 ```bash
 # API Health
 curl http://localhost:3000/api/health
-# Response: {"status":"ok","timestamp":"...","database":"connected"}
 
 # PostgreSQL Health
 docker-compose exec db pg_isready -U postgres
 ```
-
-### Logs centralisés
-
-```bash
-# Tous les services
-docker-compose logs -f
-
-# Service spécifique
-docker-compose logs -f api
-
-# Dernières 100 lignes
-docker-compose logs --tail=100 api
-```
-
----
 
 ## 🚀 Améliorations futures
 
@@ -638,72 +622,24 @@ docker-compose logs --tail=100 api
 - [ ] Ajouter des tests unitaires automatisés
 - [ ] Implémenter Docker Content Trust (signature d'images)
 - [ ] Déploiement automatique sur un environnement de staging
-- [ ] Notifications Slack/Discord des déploiements
 
 ### Monitoring
 - [ ] Intégrer Prometheus pour les métriques
 - [ ] Ajouter Grafana pour la visualisation
-- [ ] Logs centralisés avec ELK Stack
 - [ ] Alerting automatique (PagerDuty, Opsgenie)
-
-### Scaling
-- [ ] Configuration Kubernetes (K8s)
-- [ ] Auto-scaling horizontal
-- [ ] Load balancing multi-instances
-- [ ] Redis pour le cache
-
-### Sécurité avancée
-- [ ] Scan automatique des vulnérabilités (Trivy, Snyk)
-- [ ] Secrets management avec Vault
-- [ ] Rate limiting sur l'API
-- [ ] WAF (Web Application Firewall)
-
 ---
 
 ## 📝 Difficultés rencontrées
 
 ### 1. Pipeline CI/CD
 **Problème** : Le workflow ne se déclenchait pas correctement avec les conditions `if` complexes.
-
 **Solution** : Utilisation de `git diff` pour détecter les changements et conditions par step plutôt que par job.
 
 ### 2. Healthchecks
 **Problème** : Les services démarraient dans le mauvais ordre.
-
 **Solution** : Ajout de `depends_on` avec `condition: service_healthy`.
 
-### 3. TypeORM synchronize
-**Problème** : `synchronize: true` peut causer des pertes de données en production.
 
-**Solution** : Utiliser des migrations TypeORM pour la production.
 
----
 
-## 👥 Contribution
 
-Pour contribuer au projet :
-
-1. Fork le repository
-2. Créer une branche (`git checkout -b feature/amelioration`)
-3. Commit les changements (`git commit -m 'Ajout fonctionnalité'`)
-4. Push vers la branche (`git push origin feature/amelioration`)
-5. Ouvrir une Pull Request
-
----
-
-## 📄 Licence
-
-Ce projet est sous licence MIT.
-
----
-
-## 📞 Support
-
-Pour toute question ou problème :
-- Ouvrir une issue sur GitHub
-- Consulter la documentation Swagger : `/docs`
-- Vérifier les logs : `docker-compose logs -f`
-
----
-
-**Développé avec ❤️ dans le cadre du TD Conception d'application conteneurisée**

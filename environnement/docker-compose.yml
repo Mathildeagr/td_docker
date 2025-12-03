@@ -11,8 +11,17 @@ services:
       - "5438:5438"
     networks:
       - docker_td_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -p 5438"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
 
   app:
+    user: "1001:1001"
     build:
       context: ../api
       dockerfile: Dockerfile.dev
@@ -20,19 +29,26 @@ services:
     ports:
       - "3000:3000"
     environment:
-      NODE_ENV: ${NODE_ENV}
+      NODE_ENV: ${NODE_ENV:-development}
       DB_HOST: db
       DB_PORT: 5438
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
       DB_NAME: ${DB_NAME}
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     volumes:
       - ../api:/app
       - /app/node_modules
     networks:
       - docker_td_network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:3000/api/health || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
 
   front:
     build:
@@ -41,15 +57,21 @@ services:
     container_name: docker_td_front
     ports:
       - "5173:5173"
-    environment:
-      VITE_API_URL: http://localhost:3000/api
     volumes:
       - ../frontend:/app
       - /app/node_modules
     networks:
       - docker_td_network
     depends_on:
-      - app
+      app:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:5173 || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    user: "1001:1001"
 
 networks:
   docker_td_network:
@@ -59,3 +81,4 @@ networks:
 
 volumes:
   node_modules:
+  postgres_data:
